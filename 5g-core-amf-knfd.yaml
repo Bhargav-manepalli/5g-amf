@@ -10,6 +10,8 @@ vnfd:
     nets:
     - id: mgmtnet
   kdu:
+  - name: 5g-core-nrf
+    helm-chart: 5g-amf/oai-nrf
   - name: 5g-core-amf
     helm-chart: 5g-amf/oai-amf
   mgmt-cp: mgmt-ext
