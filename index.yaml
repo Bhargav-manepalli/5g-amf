@@ -1,0 +1,201 @@
+apiVersion: v1
+entries:
+  mysql:
+  - apiVersion: v2
+    appVersion: 8.0.31
+    created: "2023-05-03T16:55:10.302764231Z"
+    description: mysql chart used for oai5g core
+    digest: c6c1b1d34d4eb8b3112a2bc693df99fc9d22dfce42086f1daf436fd26e50c270
+    home: https://www.mysql.com/
+    icon: https://www.mysql.com/common/logos/logo-mysql-170x115.png
+    keywords:
+    - mysql
+    - database
+    - sql
+    name: mysql
+    sources:
+    - https://github.com/kubernetes/charts
+    - https://github.com/docker-library/mysql
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/mysql-8.0.31.tgz
+    version: 8.0.31
+  oai-amf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.313769612Z"
+    description: Helm chart for AMF network function
+    digest: 26ab2a5bddfe2278d7e72895465b5a8a2eaf77ab836897166e3c47f0c5f193e5
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - AMF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-amf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-amf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-amf-v1.5.0.tgz
+    version: v1.5.0
+  oai-ausf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.316537473Z"
+    description: Helm chart for AUSF network function
+    digest: cc6dbe25e0bd2dc2f54030831a67fd9037974519befb398835f553737bcf76e5
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - AUSF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-ausf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-ausf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-ausf-v1.5.0.tgz
+    version: v1.5.0
+  oai-nrf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.31915763Z"
+    description: A Helm chart for NRF network function
+    digest: 9d45817eea9a2bd0ce1123af033d9eab8d3f198318bbf7d339d5ce8abf12df9d
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - NRF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-nrf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nrf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-nrf-v1.5.0.tgz
+    version: v1.5.0
+  oai-nssf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.324170355Z"
+    description: Helm chart for NSSF network function
+    digest: 0ca33a29d02b725ee9b926491e3206198e150bc69c081ee8549e076ac2af0587
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - NSSF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-nssf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nssf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-nssf-v1.5.0.tgz
+    version: v1.5.0
+  oai-smf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.328121709Z"
+    description: A Helm chart for SMF network function
+    digest: 507adeb4d693745349db48962ec65771ef1b21ca3625451c58ba584807612771
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5G
+    - SMF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-smf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-smf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-smf-v1.5.0.tgz
+    version: v1.5.0
+  oai-spgwu-tiny:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.333284187Z"
+    description: A Helm chart for UPF/SPGWU TINY as network function
+    digest: a90a7efa3b721488a6a04588b4614dfb77bce58684ca6efc828e94a2b4fe4af8
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - EPC
+    - 4G
+    - 5G
+    - SPGW-U
+    - UPF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-spgwu-tiny
+    sources:
+    - https://github.com/OPENAIRINTERFACE/openair-spgwu-tiny
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-spgwu-tiny-v1.5.0.tgz
+    version: v1.5.0
+  oai-udm:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.337462935Z"
+    description: Helm chart for UDM network function
+    digest: a78a1faed91016a9b63072b6e7265d0e285dab7c9f9f161a8a389d6ad9bd5cf4
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - UDM
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-udm
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-udm
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-udm-v1.5.0.tgz
+    version: v1.5.0
+  oai-udr:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T16:55:10.340092585Z"
+    description: Helm chart for UDR network function
+    digest: 0d620447d1170aeec8cafea6f52cb6c5a90d620b6915ef728e75b72c0cc2bcaa
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - UDR
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-udr
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-udr
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-udr-v1.5.0.tgz
+    version: v1.5.0
+generated: "2023-05-03T16:55:10.293306701Z"
