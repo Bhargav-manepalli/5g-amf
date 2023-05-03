@@ -1,0 +1,22 @@
+nsd:
+  nsd:
+  - description: NS consisting of a single KNF amf-5g_knf connected to mgmt network
+    designer: OSM-Bhargav
+    df:
+    - id: default-df
+      vnf-profile:
+      - id: 5g-core-amf
+        virtual-link-connectivity:
+        - constituent-cpd-id:
+          - constituent-base-element-id: nginx
+            constituent-cpd-id: mgmt-ext
+          virtual-link-profile-id: mgmtnet
+        vnfd-id: 5g-core-amf
+    id: 5g-core-amf-ns
+    name: 5g-core-amf-ns
+    version: 1.0
+    virtual-link-desc:
+    - id: mgmtnet
+      mgmt-network: true
+    vnfd-id:
+    - 5g-core-amf
