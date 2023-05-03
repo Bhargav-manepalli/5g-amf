@@ -1,2 +1,3 @@
-# 5g-amf
-amf
+# 5g Core Components
+
+5g core components helm packages
