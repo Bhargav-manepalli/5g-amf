@@ -1,0 +1,47 @@
+apiVersion: v1
+entries:
+  oai-amf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T10:34:15.850785141Z"
+    description: Helm chart for AMF network function
+    digest: 26ab2a5bddfe2278d7e72895465b5a8a2eaf77ab836897166e3c47f0c5f193e5
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - AMF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-amf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-amf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-amf-v1.5.0.tgz
+    version: v1.5.0
+  oai-nrf:
+  - apiVersion: v2
+    appVersion: v1.5.0
+    created: "2023-05-03T10:34:15.851488226Z"
+    description: A Helm chart for NRF network function
+    digest: 9d45817eea9a2bd0ce1123af033d9eab8d3f198318bbf7d339d5ce8abf12df9d
+    icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
+    keywords:
+    - 5GCN
+    - NRF
+    maintainers:
+    - email: contact@openairinterface.org
+      name: OPENAIRINTERFACE
+    name: oai-nrf
+    sources:
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nrf
+    - https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+    - https://openairinterface.org/
+    type: application
+    urls:
+    - https://bhargav-manepalli.github.io/5g-amf/oai-nrf-v1.5.0.tgz
+    version: v1.5.0
+generated: "2023-05-03T10:34:15.848955767Z"
