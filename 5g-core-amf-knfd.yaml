@@ -14,10 +14,10 @@ vnfd:
     helm-chart: 5g-amf/mysql
   - name: 5g-core-nrf
     helm-chart: 5g-amf/oai-nrf
-  - name: 5g-core-amf
-    helm-chart: 5g-amf/oai-amf
   - name: 5g-core-ausf
     helm-chart: 5g-amf/oai-ausf
+  - name: 5g-core-amf
+    helm-chart: 5g-amf/oai-amf
   - name: 5g-core-udm
     helm-chart: 5g-amf/oai-udm
   mgmt-cp: mgmt-ext
