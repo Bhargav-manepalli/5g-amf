@@ -1,5 +1,5 @@
 vnfd:
-  description: KNF with single KDU using a helm-chart for 5g-amf Bhargav
+  description: KNF with single KDU using a helm-chart for 5g-core Bhargav
   df:
   - id: default-df
   ext-cpd:
@@ -10,10 +10,16 @@ vnfd:
     nets:
     - id: mgmtnet
   kdu:
+  - name: 5g-core-mysql
+    helm-chart: 5g-amf/mysql
   - name: 5g-core-nrf
     helm-chart: 5g-amf/oai-nrf
   - name: 5g-core-amf
     helm-chart: 5g-amf/oai-amf
+  - name: 5g-core-ausf
+    helm-chart: 5g-amf/oai-ausf
+  - name: 5g-core-udm
+    helm-chart: 5g-amf/oai-udm
   mgmt-cp: mgmt-ext
   product-name: 5g-core-amf
   provider: Bhargav
