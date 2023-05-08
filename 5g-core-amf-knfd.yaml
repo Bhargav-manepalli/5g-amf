@@ -20,10 +20,6 @@ vnfd:
     helm-chart: 5g-amf/oai-amf
   - name: 5g-core-udm
     helm-chart: 5g-amf/oai-udm
-  - name: 5g-core-udr
-    helm-chart: 5g-amf/oai-udr
-  - name: 5g-core-nssf
-    helm-chart: 5g-amf/oai-nssf
   mgmt-cp: mgmt-ext
   product-name: 5g-core-amf
   provider: Bhargav
