@@ -3,7 +3,7 @@ entries:
   mysql:
   - apiVersion: v2
     appVersion: 8.0.31
-    created: "2023-06-14T00:35:34.028807902+05:30"
+    created: "2023-06-14T01:30:00.687752501+05:30"
     description: mysql chart used for oai5g core
     digest: 511ec358b94f45f268a25ef65a39233c8da9db562e8a133750f90999f87637e7
     home: https://www.mysql.com/
@@ -22,7 +22,7 @@ entries:
   oai-5g-slicing:
   - apiVersion: v2
     appVersion: develop-v1.5.1
-    created: "2023-06-14T00:35:34.046725547+05:30"
+    created: "2023-06-14T01:30:00.700559253+05:30"
     dependencies:
     - condition: oai-nssf.enabled
       name: oai-nssf
@@ -77,7 +77,7 @@ entries:
   oai-amf:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.049370445+05:30"
+    created: "2023-06-14T01:30:00.705407317+05:30"
     description: Helm chart for AMF network function
     digest: 26ab2a5bddfe2278d7e72895465b5a8a2eaf77ab836897166e3c47f0c5f193e5
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -99,7 +99,7 @@ entries:
   oai-ausf:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.050787891+05:30"
+    created: "2023-06-14T01:30:00.707649347+05:30"
     description: Helm chart for AUSF network function
     digest: da063f8a5b33e9fddbfffaa8b4babf926a7304b29c5cff2d213c5ac2af8e5e9b
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -121,7 +121,7 @@ entries:
   oai-gnb:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.074858603+05:30"
+    created: "2023-06-14T01:30:00.722003585+05:30"
     description: A Helm chart for gnb network function
     digest: 56c62a5304eeaf4bee175379962d9e64cb98b302ca03084ddc0ddc16f9473cc2
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -143,7 +143,7 @@ entries:
   oai-gnb-cu:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.094395812+05:30"
+    created: "2023-06-14T01:30:00.74204319+05:30"
     description: A Helm chart for gnb-cu network function
     digest: 5c6ec39b290ee25ce5c675eed978da136657ade3336b5b81100165ec49c4fde3
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -166,7 +166,7 @@ entries:
   oai-gnb-cu-cp:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.130968463+05:30"
+    created: "2023-06-14T01:30:00.782748641+05:30"
     description: A Helm chart for gnb-cu network function
     digest: 4ca01640a092d8a8c6b21e721c56a069c6b86fb99054060c32e8260b9b09fc55
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -189,7 +189,7 @@ entries:
   oai-gnb-cu-up:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.194119064+05:30"
+    created: "2023-06-14T01:30:00.835246231+05:30"
     description: A Helm chart for gnb-cu network function
     digest: bc033fcf391e10792af6c6cf0ed4ee89818604f8ba541dc32927880b9f5a1690
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -212,7 +212,7 @@ entries:
   oai-gnb-du:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.288225916+05:30"
+    created: "2023-06-14T01:30:00.939415428+05:30"
     description: A Helm chart for gnb-du network function
     digest: 7c12888b2004db8c0007accf2b67ed904737409a0e8b8d452bd2d6b0d4efeb7a
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -235,7 +235,7 @@ entries:
   oai-gnbsim:
   - apiVersion: v2
     appVersion: onap-0.1.0
-    created: "2023-06-14T00:35:34.289293747+05:30"
+    created: "2023-06-14T01:30:00.940513656+05:30"
     description: A Helm chart for gnbsim
     digest: 7b98106972ebe44fa0bf8c238e10f5f817a3ce1834fefb7533067cad7ac58c07
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -256,7 +256,7 @@ entries:
   oai-nr-ue:
   - apiVersion: v2
     appVersion: develop
-    created: "2023-06-14T00:35:34.290273647+05:30"
+    created: "2023-06-14T01:30:00.941680529+05:30"
     description: A Helm chart for nr-ue network function
     digest: 8232b69799b5e63945f67cb43662f316214f7c2536119976833fc5b9740f1f24
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -278,7 +278,7 @@ entries:
   oai-nrf:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.291097943+05:30"
+    created: "2023-06-14T01:30:00.942492951+05:30"
     description: A Helm chart for NRF network function
     digest: 9d45817eea9a2bd0ce1123af033d9eab8d3f198318bbf7d339d5ce8abf12df9d
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -300,7 +300,7 @@ entries:
   oai-nssf:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.291914084+05:30"
+    created: "2023-06-14T01:30:00.943538369+05:30"
     description: Helm chart for NSSF network function
     digest: 82d5651ad396ecac37fbbd3c6dda65a9ca6d8007b97bd1ca2a091ec9b110f5bb
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -322,7 +322,7 @@ entries:
   oai-smf:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.292972005+05:30"
+    created: "2023-06-14T01:30:00.944619256+05:30"
     description: A Helm chart for SMF network function
     digest: 3c42a596bd7ff57a3127c66223b92b03477c65a8dcca1c8f84f42c11006c74ac
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -344,7 +344,7 @@ entries:
   oai-spgwu-tiny:
   - apiVersion: v2
     appVersion: develop-v1.5.1
-    created: "2023-06-14T00:35:34.294160861+05:30"
+    created: "2023-06-14T01:30:00.945878511+05:30"
     description: A Helm chart for UPF/SPGWU TINY as network function
     digest: 7d50adae27d474afb4782f8105861959e029ae55d0c8dc5b715c238c7053e8c1
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -369,7 +369,7 @@ entries:
   oai-tiny-gnbsim:
   - apiVersion: v2
     appVersion: develop-v1.5.1
-    created: "2023-06-14T00:35:34.295351569+05:30"
+    created: "2023-06-14T01:30:00.94720618+05:30"
     description: A Helm chart for UPF/SPGWU TINY as network function
     digest: cd89e5026920ddd09266849c2713cd443827a94747b80e9c6a4e95113a0b80e0
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -394,7 +394,7 @@ entries:
   oai-traffic-server:
   - apiVersion: v2
     appVersion: v1
-    created: "2023-06-14T00:35:34.303170329+05:30"
+    created: "2023-06-14T01:30:00.955732733+05:30"
     description: Helm chart for oai-traffic-server
     digest: eadaf610f99dc87d95c5b8734929ef8bc90743e891fc14c8c4ce50359e22b131
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -414,7 +414,7 @@ entries:
   oai-udm:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.303938882+05:30"
+    created: "2023-06-14T01:30:00.95657852+05:30"
     description: Helm chart for UDM network function
     digest: 57f6c38576b7bc45efe53c0ef2d982826db656afda353c4bd92890b6741ab840
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -436,7 +436,7 @@ entries:
   oai-udr:
   - apiVersion: v2
     appVersion: v1.5.0
-    created: "2023-06-14T00:35:34.304731094+05:30"
+    created: "2023-06-14T01:30:00.957485577+05:30"
     description: Helm chart for UDR network function
     digest: 57f1d2f1e773633f66aafb35db1afe57205d9b3290fa0adde5b600d6b17b6c85
     icon: http://www.openairinterface.org/wp-content/uploads/2015/06/cropped-oai_final_logo.png
@@ -455,4 +455,4 @@ entries:
     urls:
     - https://bhargav-manepalli.github.io/5g-amf/oai-udr-v1.5.0.tgz
     version: v1.5.0
-generated: "2023-06-14T00:35:34.023858882+05:30"
+generated: "2023-06-14T01:30:00.684181727+05:30"
