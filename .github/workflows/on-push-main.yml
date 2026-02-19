@@ -1,16 +1,122 @@
-name: Basic - On Push to Main
+name: Changed Files + Diff Summary (Push to Main)
 on:
   push:
     branches:
       - main
 jobs:
-  basic-job:
+  show-changes:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Print trigger info
+      - name: Checkout repo (full history needed for diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute commit range (before..after)
+        id: range
+        shell: bash
         run: |
-          echo "✅ Workflow triggered!"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Branch: $GITHUB_REF"
-          echo "Commit: $GITHUB_SHA"
-          echo "Actor: $GITHUB_ACTOR"
+          set -euo pipefail
+
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          echo "GITHUB_EVENT_BEFORE=$BEFORE" >> "$GITHUB_ENV"
+          echo "GITHUB_EVENT_AFTER=$AFTER" >> "$GITHUB_ENV"
+
+          # Edge case: first push where BEFORE is all zeros
+          if [[ "$BEFORE" =~ ^0+$ ]]; then
+            echo "Detected first push (before is all zeros). Using AFTER^ as BEFORE."
+            BEFORE="$(git rev-parse "${AFTER}^" 2>/dev/null || true)"
+            if [[ -z "$BEFORE" ]]; then
+              echo "RANGE_AVAILABLE=false" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            echo "GITHUB_EVENT_BEFORE=$BEFORE" >> "$GITHUB_ENV"
+          fi
+
+          echo "RANGE_AVAILABLE=true" >> "$GITHUB_ENV"
+
+      - name: Generate changed files + diff (files)
+        if: env.RANGE_AVAILABLE == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE="$GITHUB_EVENT_BEFORE"
+          AFTER="$GITHUB_EVENT_AFTER"
+
+          git diff --name-only "$BEFORE" "$AFTER" > changed_files.txt
+          git diff --stat "$BEFORE" "$AFTER" > diff_stat.txt
+          git diff "$BEFORE" "$AFTER" > diff.patch
+
+      - name: Write Job Summary (pretty UI)
+        if: env.RANGE_AVAILABLE == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE="$GITHUB_EVENT_BEFORE"
+          AFTER="$GITHUB_EVENT_AFTER"
+
+          {
+            echo "# ✅ Change Summary"
+            echo ""
+            echo "**Repository:** \`$GITHUB_REPOSITORY\`  "
+            echo "**Branch:** \`$GITHUB_REF\`  "
+            echo "**Actor:** \`$GITHUB_ACTOR\`  "
+            echo "**Commit range:** \`$BEFORE..$AFTER\`  "
+            echo ""
+
+            echo "## 📄 Changed files"
+            FILE_COUNT="$(wc -l < changed_files.txt | tr -d ' ')"
+            echo "**Total:** $FILE_COUNT"
+            echo ""
+            echo "<details><summary>Show file list</summary>"
+            echo ""
+            echo '```text'
+            if [[ "$FILE_COUNT" -eq 0 ]]; then
+              echo "(No files changed)"
+            else
+              cat changed_files.txt
+            fi
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+
+            echo "## 📊 Diff stats"
+            echo '```text'
+            cat diff_stat.txt
+            echo '```'
+            echo ""
+
+            echo "## 🧩 Patch (truncated)"
+            echo "Showing first **400 lines** of the patch (to avoid GitHub log/summary limits)."
+            echo ""
+            echo "<details><summary>Show patch preview</summary>"
+            echo ""
+            echo '```diff'
+            head -n 400 diff.patch
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "> Tip: If you want the full patch downloadable, I can add an **artifact upload** step."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Handle no-range case (first commit)
+        if: env.RANGE_AVAILABLE != 'true'
+        shell: bash
+        run: |
+          {
+            echo "# ✅ Change Summary"
+            echo ""
+            echo "No diff range available (likely the first commit on the branch)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload full patch artifact
+        if: env.RANGE_AVAILABLE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-patch
+          path: diff.patch
