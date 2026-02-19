@@ -1,14 +1,16 @@
-name: Changed Files + Diff Summary (Push to Main)
+name: QGenie - Summarize Diff (Push to Main)
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  show-changes:
+  summarize:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo (full history needed for diff)
+      - name: Checkout repo (full history for diffs)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -22,101 +24,196 @@ jobs:
           BEFORE="${{ github.event.before }}"
           AFTER="${{ github.sha }}"
 
-          echo "GITHUB_EVENT_BEFORE=$BEFORE" >> "$GITHUB_ENV"
-          echo "GITHUB_EVENT_AFTER=$AFTER" >> "$GITHUB_ENV"
-
           # Edge case: first push where BEFORE is all zeros
           if [[ "$BEFORE" =~ ^0+$ ]]; then
-            echo "Detected first push (before is all zeros). Using AFTER^ as BEFORE."
+            echo "First push detected (before is zeros). Using AFTER^ as BEFORE."
             BEFORE="$(git rev-parse "${AFTER}^" 2>/dev/null || true)"
             if [[ -z "$BEFORE" ]]; then
-              echo "RANGE_AVAILABLE=false" >> "$GITHUB_ENV"
+              echo "range_available=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            echo "GITHUB_EVENT_BEFORE=$BEFORE" >> "$GITHUB_ENV"
           fi
 
-          echo "RANGE_AVAILABLE=true" >> "$GITHUB_ENV"
+          echo "range_available=true" >> "$GITHUB_OUTPUT"
+          echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
+          echo "after=$AFTER" >> "$GITHUB_OUTPUT"
 
-      - name: Generate changed files + diff (files)
-        if: env.RANGE_AVAILABLE == 'true'
+          echo "Range: $BEFORE..$AFTER"
+
+      - name: Generate changed files + diff
+        if: steps.range.outputs.range_available == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          BEFORE="$GITHUB_EVENT_BEFORE"
-          AFTER="$GITHUB_EVENT_AFTER"
+          BEFORE="${{ steps.range.outputs.before }}"
+          AFTER="${{ steps.range.outputs.after }}"
 
           git diff --name-only "$BEFORE" "$AFTER" > changed_files.txt
           git diff --stat "$BEFORE" "$AFTER" > diff_stat.txt
           git diff "$BEFORE" "$AFTER" > diff.patch
 
-      - name: Write Job Summary (pretty UI)
-        if: env.RANGE_AVAILABLE == 'true'
+      - name: Call QGenie (send diff + get summary)
+        if: steps.range.outputs.range_available == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          BEFORE="$GITHUB_EVENT_BEFORE"
-          AFTER="$GITHUB_EVENT_AFTER"
+
+          # ✅ Hardcoded key for now (replace with secrets later)
+          QGENIE_API_KEY="PUT_YOUR_KEY_HERE"
+
+          BEFORE="${{ steps.range.outputs.before }}"
+          AFTER="${{ steps.range.outputs.after }}"
+          REPO="$GITHUB_REPOSITORY"
+          REF="$GITHUB_REF"
+          ACTOR="$GITHUB_ACTOR"
+
+          python3 - <<'PY'
+          import os, json, urllib.request, urllib.error
+          
+          api_key = os.environ["QGENIE_API_KEY"]
+          repo = os.environ["REPO"]
+          ref = os.environ["REF"]
+          actor = os.environ["ACTOR"]
+          before = os.environ["BEFORE"]
+          after = os.environ["AFTER"]
+          
+          with open("changed_files.txt", "r", encoding="utf-8") as f:
+              changed_files = f.read().strip()
+          with open("diff_stat.txt", "r", encoding="utf-8") as f:
+              diff_stat = f.read().strip()
+          with open("diff.patch", "r", encoding="utf-8", errors="replace") as f:
+              patch_lines = f.readlines()
+          
+          MAX_PATCH_LINES = 900
+          patch_preview = "".join(patch_lines[:MAX_PATCH_LINES])
+          
+          system_prompt = (
+              "You are a code review assistant.\n"
+              "Task:\n"
+              "1) Summarize what changed in this push (high-level + key details).\n"
+              "2) Call out potential risks (breaking changes, security, perf, tests missing).\n"
+              "3) Suggest documentation updates if needed.\n"
+              "Return your answer in Markdown with these sections:\n"
+              "- Summary\n"
+              "- Key Changes\n"
+              "- Risk / Impact\n"
+              "- Suggestions\n"
+          )
+          
+          user_content = (
+              f"Repo: {repo}\n"
+              f"Branch: {ref}\n"
+              f"Actor: {actor}\n"
+              f"Commit range: {before}..{after}\n\n"
+              f"Changed files:\n{changed_files}\n\n"
+              f"Diff stats:\n{diff_stat}\n\n"
+              f"Diff (first {MAX_PATCH_LINES} lines):\n{patch_preview}\n"
+          )
+          
+          payload = {
+              "model": "codewise_instruct",
+              "messages": [
+                  {"role": "system", "content": system_prompt},
+                  {"role": "user", "content": user_content},
+              ],
+              "temperature": 0.2,
+              "max_tokens": 500,
+          }
+          
+          data = json.dumps(payload).encode("utf-8")
+          
+          req = urllib.request.Request(
+              "https://qgenie-api.qualcomm.com/v1/chat/completions",
+              data=data,
+              headers={
+                  "Content-Type": "application/json",
+                  "Authorization": f"Bearer {api_key}",
+              },
+              method="POST",
+          )
+          
+          try:
+              with urllib.request.urlopen(req, timeout=120) as resp:
+                  resp_body = resp.read().decode("utf-8", errors="replace")
+          except urllib.error.HTTPError as e:
+              body = e.read().decode("utf-8", errors="replace")
+              raise SystemExit(f"QGenie HTTPError {e.code}: {body}")
+          except Exception as e:
+              raise SystemExit(f"QGenie request failed: {e}")
+          
+          with open("qgenie_response.json", "w", encoding="utf-8") as f:
+              f.write(resp_body)
+          
+          summary = ""
+          try:
+              parsed = json.loads(resp_body)
+              summary = parsed["choices"][0]["message"]["content"].strip()
+          except Exception:
+              summary = "Could not parse QGenie response. Raw response saved in qgenie_response.json."
+          
+          with open("qgenie_summary.md", "w", encoding="utf-8") as f:
+              f.write(summary + "\n")
+          PY
+        env:
+          QGENIE_API_KEY: ${{ env.QGENIE_API_KEY }}
+          BEFORE: ${{ steps.range.outputs.before }}
+          AFTER: ${{ steps.range.outputs.after }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref }}
+          ACTOR: ${{ github.actor }}
+
+      - name: Write GitHub Actions Job Summary (pretty UI)
+        if: steps.range.outputs.range_available == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BEFORE="${{ steps.range.outputs.before }}"
+          AFTER="${{ steps.range.outputs.after }}"
+          FILE_COUNT="$(wc -l < changed_files.txt | tr -d ' ')"
 
           {
-            echo "# ✅ Change Summary"
+            echo "# ✅ QGenie Diff Summary"
             echo ""
-            echo "**Repository:** \`$GITHUB_REPOSITORY\`  "
+            echo "**Repo:** \`$GITHUB_REPOSITORY\`  "
             echo "**Branch:** \`$GITHUB_REF\`  "
             echo "**Actor:** \`$GITHUB_ACTOR\`  "
             echo "**Commit range:** \`$BEFORE..$AFTER\`  "
             echo ""
-
-            echo "## 📄 Changed files"
-            FILE_COUNT="$(wc -l < changed_files.txt | tr -d ' ')"
-            echo "**Total:** $FILE_COUNT"
+            echo "## 🤖 AI Summary"
             echo ""
+            cat qgenie_summary.md
+            echo ""
+            echo "## 📄 Changed files ($FILE_COUNT)"
             echo "<details><summary>Show file list</summary>"
             echo ""
             echo '```text'
-            if [[ "$FILE_COUNT" -eq 0 ]]; then
-              echo "(No files changed)"
-            else
-              cat changed_files.txt
-            fi
+            cat changed_files.txt
             echo '```'
             echo ""
             echo "</details>"
             echo ""
-
             echo "## 📊 Diff stats"
             echo '```text'
             cat diff_stat.txt
             echo '```'
             echo ""
-
-            echo "## 🧩 Patch (truncated)"
-            echo "Showing first **400 lines** of the patch (to avoid GitHub log/summary limits)."
-            echo ""
+            echo "## 🧩 Patch preview (first 200 lines)"
             echo "<details><summary>Show patch preview</summary>"
             echo ""
             echo '```diff'
-            head -n 400 diff.patch
+            head -n 200 diff.patch
             echo '```'
             echo ""
             echo "</details>"
-            echo ""
-            echo "> Tip: If you want the full patch downloadable, I can add an **artifact upload** step."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Handle no-range case (first commit)
-        if: env.RANGE_AVAILABLE != 'true'
+        if: steps.range.outputs.range_available != 'true'
         shell: bash
         run: |
           {
-            echo "# ✅ Change Summary"
+            echo "# ✅ QGenie Diff Summary"
             echo ""
             echo "No diff range available (likely the first commit on the branch)."
           } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload full patch artifact
-        if: env.RANGE_AVAILABLE == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: diff-patch
-          path: diff.patch
