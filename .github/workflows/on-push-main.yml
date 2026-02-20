@@ -1,219 +1,78 @@
-name: QGenie - Summarize Diff (Push to Main)
-
+name: Update Docs
 on:
   push:
     branches:
       - main
-
 jobs:
-  summarize:
+  update-docs:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo (full history for diffs)
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Compute commit range (before..after)
-        id: range
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          BEFORE="${{ github.event.before }}"
-          AFTER="${{ github.sha }}"
-
-          # Edge case: first push where BEFORE is all zeros
-          if [[ "$BEFORE" =~ ^0+$ ]]; then
-            echo "First push detected (before is zeros). Using AFTER^ as BEFORE."
-            BEFORE="$(git rev-parse "${AFTER}^" 2>/dev/null || true)"
-            if [[ -z "$BEFORE" ]]; then
-              echo "range_available=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-
-          echo "range_available=true" >> "$GITHUB_OUTPUT"
-          echo "before=$BEFORE" >> "$GITHUB_OUTPUT"
-          echo "after=$AFTER" >> "$GITHUB_OUTPUT"
-
-          echo "Range: $BEFORE..$AFTER"
-
-      - name: Generate changed files + diff
-        if: steps.range.outputs.range_available == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          BEFORE="${{ steps.range.outputs.before }}"
-          AFTER="${{ steps.range.outputs.after }}"
-
-          git diff --name-only "$BEFORE" "$AFTER" > changed_files.txt
-          git diff --stat "$BEFORE" "$AFTER" > diff_stat.txt
-          git diff "$BEFORE" "$AFTER" > diff.patch
-
-      - name: Call QGenie (send diff + get summary)
-        if: steps.range.outputs.range_available == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # ✅ Hardcoded key for now (replace with secrets later)
-          QGENIE_API_KEY="PUT_YOUR_KEY_HERE"
-
-          BEFORE="${{ steps.range.outputs.before }}"
-          AFTER="${{ steps.range.outputs.after }}"
-          REPO="$GITHUB_REPOSITORY"
-          REF="$GITHUB_REF"
-          ACTOR="$GITHUB_ACTOR"
-
-          python3 - <<'PY'
-          import os, json, urllib.request, urllib.error
-          
-          api_key = os.environ["QGENIE_API_KEY"]
-          repo = os.environ["REPO"]
-          ref = os.environ["REF"]
-          actor = os.environ["ACTOR"]
-          before = os.environ["BEFORE"]
-          after = os.environ["AFTER"]
-          
-          with open("changed_files.txt", "r", encoding="utf-8") as f:
-              changed_files = f.read().strip()
-          with open("diff_stat.txt", "r", encoding="utf-8") as f:
-              diff_stat = f.read().strip()
-          with open("diff.patch", "r", encoding="utf-8", errors="replace") as f:
-              patch_lines = f.readlines()
-          
-          MAX_PATCH_LINES = 900
-          patch_preview = "".join(patch_lines[:MAX_PATCH_LINES])
-          
-          system_prompt = (
-              "You are a code review assistant.\n"
-              "Task:\n"
-              "1) Summarize what changed in this push (high-level + key details).\n"
-              "2) Call out potential risks (breaking changes, security, perf, tests missing).\n"
-              "3) Suggest documentation updates if needed.\n"
-              "Return your answer in Markdown with these sections:\n"
-              "- Summary\n"
-              "- Key Changes\n"
-              "- Risk / Impact\n"
-              "- Suggestions\n"
-          )
-          
-          user_content = (
-              f"Repo: {repo}\n"
-              f"Branch: {ref}\n"
-              f"Actor: {actor}\n"
-              f"Commit range: {before}..{after}\n\n"
-              f"Changed files:\n{changed_files}\n\n"
-              f"Diff stats:\n{diff_stat}\n\n"
-              f"Diff (first {MAX_PATCH_LINES} lines):\n{patch_preview}\n"
-          )
-          
-          payload = {
-              "model": "codewise_instruct",
-              "messages": [
-                  {"role": "system", "content": system_prompt},
-                  {"role": "user", "content": user_content},
-              ],
-              "temperature": 0.2,
-              "max_tokens": 500,
-          }
-          
-          data = json.dumps(payload).encode("utf-8")
-          
-          req = urllib.request.Request(
-              "https://qgenie-api.qualcomm.com/v1/chat/completions",
-              data=data,
-              headers={
-                  "Content-Type": "application/json",
-                  "Authorization": f"Bearer {api_key}",
-              },
-              method="POST",
-          )
-          
-          try:
-              with urllib.request.urlopen(req, timeout=120) as resp:
-                  resp_body = resp.read().decode("utf-8", errors="replace")
-          except urllib.error.HTTPError as e:
-              body = e.read().decode("utf-8", errors="replace")
-              raise SystemExit(f"QGenie HTTPError {e.code}: {body}")
-          except Exception as e:
-              raise SystemExit(f"QGenie request failed: {e}")
-          
-          with open("qgenie_response.json", "w", encoding="utf-8") as f:
-              f.write(resp_body)
-          
-          summary = ""
-          try:
-              parsed = json.loads(resp_body)
-              summary = parsed["choices"][0]["message"]["content"].strip()
-          except Exception:
-              summary = "Could not parse QGenie response. Raw response saved in qgenie_response.json."
-          
-          with open("qgenie_summary.md", "w", encoding="utf-8") as f:
-              f.write(summary + "\n")
-          PY
+      - uses: actions/github-script@v8
         env:
-          QGENIE_API_KEY: ${{ env.QGENIE_API_KEY }}
-          BEFORE: ${{ steps.range.outputs.before }}
-          AFTER: ${{ steps.range.outputs.after }}
-          REPO: ${{ github.repository }}
-          REF: ${{ github.ref }}
-          ACTOR: ${{ github.actor }}
+          MINTLIFY_API_KEY: ${{ secrets.MINTLIFY_API_KEY }}
+          PROJECT_ID: ${{ secrets.MINTLIFY_PROJECT_ID }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const projectId = process.env.PROJECT_ID;
+            const apiKey = process.env.MINTLIFY_API_KEY;
 
-      - name: Write GitHub Actions Job Summary (pretty UI)
-        if: steps.range.outputs.range_available == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
+            if (!projectId || !apiKey) {
+              core.setFailed('Missing MINTLIFY_PROJECT_ID or MINTLIFY_API_KEY secrets');
+              return;
+            }
 
-          BEFORE="${{ steps.range.outputs.before }}"
-          AFTER="${{ steps.range.outputs.after }}"
-          FILE_COUNT="$(wc -l < changed_files.txt | tr -d ' ')"
+            const url = `https://api.mintlify.com/v1/agent/${projectId}/job`;
+            const payload = {
+              branch: `mintlify/docs-update-${Date.now()}`,
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an action runner that updates documentation based on code changes. You should never ask questions. If you are not able to access the repository, report the error and exit.'
+                },
+                {
+                  role: 'user',
+                  content: `Update the documentation for our recent pushes to main:\n\nRepository: ${owner}/${repo}`
+                }
+              ],
+              asDraft: false
+            };
 
-          {
-            echo "# ✅ QGenie Diff Summary"
-            echo ""
-            echo "**Repo:** \`$GITHUB_REPOSITORY\`  "
-            echo "**Branch:** \`$GITHUB_REF\`  "
-            echo "**Actor:** \`$GITHUB_ACTOR\`  "
-            echo "**Commit range:** \`$BEFORE..$AFTER\`  "
-            echo ""
-            echo "## 🤖 AI Summary"
-            echo ""
-            cat qgenie_summary.md
-            echo ""
-            echo "## 📄 Changed files ($FILE_COUNT)"
-            echo "<details><summary>Show file list</summary>"
-            echo ""
-            echo '```text'
-            cat changed_files.txt
-            echo '```'
-            echo ""
-            echo "</details>"
-            echo ""
-            echo "## 📊 Diff stats"
-            echo '```text'
-            cat diff_stat.txt
-            echo '```'
-            echo ""
-            echo "## 🧩 Patch preview (first 200 lines)"
-            echo "<details><summary>Show patch preview</summary>"
-            echo ""
-            echo '```diff'
-            head -n 200 diff.patch
-            echo '```'
-            echo ""
-            echo "</details>"
-          } >> "$GITHUB_STEP_SUMMARY"
+            try {
+              const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${apiKey}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+              });
 
-      - name: Handle no-range case (first commit)
-        if: steps.range.outputs.range_available != 'true'
-        shell: bash
-        run: |
-          {
-            echo "# ✅ QGenie Diff Summary"
-            echo ""
-            echo "No diff range available (likely the first commit on the branch)."
-          } >> "$GITHUB_STEP_SUMMARY"
+              if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}: ${await response.text()}`);
+              }
+
+              const reader = response.body.getReader();
+              const decoder = new TextDecoder();
+              let buffer = '';
+
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+                for (const line of lines) {
+                  if (line.trim()) {
+                    console.log(line);
+                  }
+                }
+              }
+              if (buffer.trim()) {
+                console.log(buffer);
+              }
+
+              core.notice(`Documentation update job triggered for ${owner}/${repo}`);
+            } catch (error) {
+              core.setFailed(`Failed to create documentation update job: ${error.message}`);
+            }
